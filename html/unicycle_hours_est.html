@@ -1,0 +1,413 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>Unicycle learning time estimate</title>
+        <meta name="keywords" content="unicycle learning monocykl nauka">
+        <meta name="description" content="Interactive on-line form to estimate your learning time on riding a unicycle.">
+        <!-- <meta http-equiv="content-language" content="pl"> -->
+        <!-- <link rel="shortcut icon" href="{{STATIC_URL}}icons/favicon.ico" type="image/x-icon"> -->
+
+        <link rel="stylesheet" href="http://rybi.net/css/blueprint/screen.css" type="text/css" media="screen, projection">
+        <link rel="stylesheet" href="http://rybi.net/css/blueprint/print.css" type="text/css" media="print">
+        <!--[if lt IE 8]>
+          <link rel="stylesheet" href="http://rybi.net/css/blueprint/ie.css" type="text/css" media="screen, projection">
+        <![endif]--></code></pre>
+        <style type="text/css">
+            .label {
+                margin-top: 0.5em;
+            }
+            .border {
+                border-style: solid;
+                border-width: 1px;
+            }
+            .results .label {
+                 margin: 0;
+                 padding-top: 1.5em;
+            }
+            .results {
+                display: none;
+            }
+            .results .value {
+                margin: 0;
+                font-weight: bold;
+                font-size: 3em;
+            }
+        </style>
+    </head>
+    <body class="">
+        <div class="container">
+            <div class="span-24">
+                <h1 class="gettext">How long does it take to learn to ride a unicycle?</h1>
+            </div>
+            <form class="estimated_hours">
+                <div class="span-24 ">
+                    <div class="label span-10 gettext">Age when you will start learning (years)</div>
+                    <div class="span-8"><input class="text" name="age" /></div>
+                    <div class="result span-4">
+                        <div class="hide success gettext">OK</div>
+                        <div class="hide error gettext">Send me a picture first</div>
+                    </div>
+                </div>
+                <div class="span-24">
+                    <div class="label span-10 gettext">Number of hours you plan to practice a day</div>
+                    <div class="span-8"><input class="text" name="hours_per_day" /> <!-- slider --></div>
+                    <div class="result span-4">
+                        <div class="hide success gettext">OK</div>
+                        <div class="hide error gettext">Send me a picture first</div>
+                    </div>
+                </div>
+                <div class="span-24">
+                    <div class="label span-10 gettext">Gender</div>
+                    <div class="span-8">
+                        <select name="gender">
+                            <option value="m" class="gettext">Male</option>
+                            <option value="f" class="gettext">Female</option>
+                        </select>
+                    </div>
+                    <div class="result span-4">
+                        <div class="hide success gettext">OK</div>
+                        <div class="hide error gettext">Send me a picture first</div>
+                    </div>
+                </div>
+                <div class="span-24">
+                    <div class="label span-10 gettext">Quality of instruction (on a scale of 0 for no help at all, to 1 for having proper instruction)</div>
+                    <div class="span-8"><input class="text" name="quality_of_instruction" /> <!-- slider --></div>
+                    <div class="result span-4">
+                        <div class="hide success gettext">OK</div>
+                        <div class="hide error gettext">Send me a picture first</div>
+                    </div>
+                </div>
+                <div class="span-24">
+                    <div class="label span-10 gettext">Nominal wheel size (diameter in inches)</div>
+                    <div class="span-8">
+                        <select name="wheel_size">
+                            <option value="20">20"</option>
+                            <option value="24">24"</option>
+                        </select>
+                    </div>
+                    <div class="result span-4">
+                        <div class="hide success gettext">OK</div>
+                        <div class="hide error gettext">Send me a picture first</div>
+                    </div>
+                </div>
+            </form>
+
+            <hr />
+
+            <div class="span-24 results">
+                <div class="span-10 gettext loud label">Typically expected learning time</div>
+                <div class="span-14 loud last value expected_hours">&nbsp;</div>
+            </div>
+
+            <div class="results span-24">
+                <div class="span-10 gettext loud label">how many days?</div>
+                <div class="span-14 loud last value expected_days">&nbsp;</div>
+            </div>
+
+            <div class="results span-24">
+                <div class="span-10 gettext loud label">Begin today and you can expect to ride on</div>
+                <div class="span-14 loud last value expected_date">&nbsp;</div>
+            </div>
+
+            <div class="span-24 results quiet gettext last">Assuming you start from scratch.</div>
+
+            <!--
+            Typically expected learning time is <span class="large expected_hours">XXX</span> hours spread over <span class="loud expected_days">YYY</span> calendar days. Begin today and you can expect to ride on <span class="loud highlight expected_date">YYYY</span>. Assuming you start from scratch.
+            -->
+            <div class="span-24 quiet">
+                <hr />
+                Change language: <a href="#" class="set_locale" data-locale="pl">pl</a> <a href="#" class="set_locale" data-locale="en">en</a><br />
+                <a href="http://klaasbil.home.xs4all.nl/hour_est.xls">original spreadsheet</a> design Klaas Bil © 2003<br />
+                Please visit <a href="http://klaasbil.home.xs4all.nl/agelearn.htm">original statistical analisis</a><br />
+                HTML/JS version by <a href="http://rybi.net/">Dariusz Rybi</a>
+            </div>
+        </div>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+        <script type="text/javascript" src="http://rybi.net/js/jquery.cookie.js"></script>
+        <script type="text/javascript">
+            // http://jquery-howto.blogspot.com/2009/09/get-url-parameters-values-with-jquery.html
+            // Read a page's GET URL variables and return them as an associative array.
+            function getUrlVars() {
+                var vars = [], hash;
+                var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+                for(var i = 0; i < hashes.length; i++) {
+                    hash = hashes[i].split('=');
+                    vars.push(hash[0]);
+                    vars[hash[0]] = hash[1];
+                }
+                return vars;
+            }
+        </script>
+        <script type="text/javascript">
+            $(function() {
+                var catalog = {
+                    'pl': {
+                        'How long does it take to learn to ride a unicycle?': 'Ile czasu zajmie mi nauka jazdy na monocyklu?',
+                        'Number of hours you plan to practice a day': 'Liczba godzin dziennie poświęconych na trening',
+                        'Age when you will start learning (years)': 'W jakim wieku rozpoczniesz naukę (lat)',
+                        'OK': 'OK',
+                        'Gender': 'Płeć',
+                        'Quality of instruction (on a scale of 0 for no help at all, to 1 for having proper instruction)': 'Jakość instruktarzu (w skali od 0 dla braku jakiejkolwiek pomocy innych osób, do 1 dla pełnoprawnego instruktarzu)',
+                        'Nominal wheel size (diameter in inches)': 'Rozmiar koła w calach',
+                        'Typically expected learning time': 'Oczekiwany czas nauki',
+                        'how many days?': 'ile dni?',
+                        'Begin today and you can expect to ride on': 'Jeśli zaczniesz dzisiaj spodziewaj się pierwszej jazdy',
+                        'Assuming you start from scratch.': 'Zakładając, że zaczynasz od zera.',
+                        'Send me a picture first': 'Zdjęcie, albo nie uwierzę',
+                        'Enter a valid number.': 'Podaj liczbę.',
+                        'Male': 'Mężczyzna',
+                        'Female': 'Kobieta'
+                    },
+                    'en': {}
+                };
+                var locale = 'en';
+                var get_locale_from_cookie = function() {
+                    return $.cookie('locale');
+                }
+                var set_locale = function(l) {
+                    return $.cookie('locale', l, {expires: 7});
+                };
+                var get_locale_from_navigator = function() { // this is proved to be useless
+                    var locale_sources = [
+                        'language', // (non-IE, browser install language)
+                        'browserLanguage', // (IE, browser install language)
+                        'userLanguage', // (IE, user-level OS-wide language setting)
+                        'systemLanguage' // (IE, OS installation language)
+                    ];
+                    var loc = locale;
+                    $.each(locale_sources, function(i, k) {
+                        var v = navigator[k];
+                        if (v === undefined) return true;
+                        loc = v.split("_")[0];
+                        if (catalog[loc] === undefined) loc = 'en';
+                        return false;
+                    });
+                    return loc;
+                };
+                var get_locale_from_get = function() {
+                    return getUrlVars()['lang'];
+                }
+                locale = get_locale_from_get() || get_locale_from_cookie() || get_locale_from_navigator();
+                var current_catalog = catalog[locale];
+                $.gettext = function(s) {
+                    if (current_catalog[s] === undefined) {
+                        try {
+                            console.warn('[%s] No translation for: %o', locale, s);
+                        } catch (e) { }
+                        return s;
+                    }
+                    return current_catalog[s];
+                }
+
+                $('.gettext').each(function() {
+                    var s = $(this).text();
+                    $(this).text($.gettext(s));
+                });
+                $('.set_locale').click(function() {
+                    set_locale($(this).data('locale'));
+                    window.location.reload();
+                    return false;
+                });
+            });
+        </script>
+        <script type="text/javascript">
+            if(typeof console === "undefined") {
+                console = {
+                    log: function() {},
+                    debug: function() {},
+                    info: function() {},
+                    warn: function() {},
+                    error: function() {}
+                };
+            }
+
+            var valid_number = function(v) {
+                var numberRegex = /^[+-]?\d+(\.\d+)?([eE][+-]?\d+)?$/;
+                if(!numberRegex.test(v)) return {'result': false, 'error': $.gettext('Enter a valid number.')};
+                return {'result': true};
+            }
+            var VALIDATORS = {
+                'age': function(v) {
+                    var result;
+                    result = valid_number(v);
+                    if (!result.result) return result;
+                    v = parseFloat(v, 10);
+                    if (v < 4) return {result: false, error: $.gettext('Photo or it didn\'t happen.')};
+                    return {result: true};
+                },
+                'hours_per_day': function(v) {
+                    var result;
+                    result = valid_number(v);
+                    if (!result.result) return result;
+                    v = parseFloat(v, 10);
+                    if (v <= 0) return {result: false, error: $.gettext('Oh c\'mon...')};
+                    if (v > 24) return {result: false, error: $.gettext('No way...')};
+                    return {result: true};
+                },
+                'gender': function(v) {
+                    return {result: true};
+                },
+                'quality_of_instruction': function(v) {
+                    var result;
+                    result = valid_number(v);
+                    if (!result.result) return result;
+                    v = parseFloat(v, 10);
+                    if (v < 0 || v > 1) return {result: false, error: $.gettext('Enter a real value between 0 and 1.')};
+                    return {result: true};
+                },
+                'wheel_size': function(v) {
+                    return {result: true};
+                }
+            };
+
+            var xls_lookup = function(lookup_value, lookup_vector, result_vector) {
+                /* Important The values in lookup_vector must be placed in ascending order.
+                 *
+                 * If LOOKUP cannot find the lookup_value, it matches the largest value in lookup_vector that is less than or equal to lookup_value.
+                 * If lookup_value is smaller than the smallest value in lookup_vector, LOOKUP gives the #N/A error value.
+                 *
+                 */
+                for (var i=lookup_vector.length-1; i>-1; i--) {
+                    if (lookup_vector[i] <= lookup_value) {
+                        console.debug('xls_lookup: %o <= %o -> returning %o', lookup_vector[i], lookup_value, result_vector[i]);
+                        return result_vector[i];
+                    }
+                }
+                return null;
+            };
+
+            var compute_result = function($form) {
+                var age = 28;
+                var quality_of_instruction = 0;
+                var nominal_wheel_size = 24;
+                var sex = 'm';
+                var hours_per_day = 0.5;
+                $.each($form.serializeArray(), function(i, v) {
+                    switch(v.name) { 
+                        case 'age':
+                            age = v.value;
+                            break;
+                        case 'hours_per_day':
+                            hours_per_day = v.value;
+                            break;
+                        case 'gender':
+                            sex = v.value;
+                            break;
+                        case 'quality_of_instruction':
+                            quality_of_instruction = v.value;
+                            break;
+                        case 'wheel_size':
+                            nominal_wheel_size = v.value;
+                            break;
+                    }
+                });
+
+                // upper boundary bin logage
+                var upper_boundary = [0, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1, 1.05, 1.1, 1.15, 1.2, 1.25, 1.3, 1.35, 1.4, 1.45, 1.5, 1.55, 1.6, 1.65, 1.7, 1.75, 1.8, 1.85, 1.9, 1.95, 2];
+                // manual guess hours
+                var manual_guess_hours = [8, 8, 8.1, 8.35, 8.8, 9.5, 10.5, 11.5, 13, 14.5, 16, 17.5, 16.5, 14, 12.5, 11, 10.5, 9.5, 9, 8.5, 8, 8, 9, 11, 14, 20.5, 31.8, 45.6, 63, 88, 133, 200];
+                var log_of_age = Math.log(age) / Math.log(10);
+                console.debug('log(age): %o', log_of_age);
+                var bottom_bin_x = Math.floor(log_of_age*20)/20;
+                console.debug('bottom bin x: %o', bottom_bin_x);
+                var top_bin_x = bottom_bin_x + 0.05;
+                console.debug('top bin x: %o', top_bin_x);
+                var bottom_bin_y = xls_lookup(bottom_bin_x, upper_boundary, manual_guess_hours);
+                console.debug('bottom_bin_y: %o', bottom_bin_y);
+                var top_bin_y = xls_lookup(top_bin_x, upper_boundary, manual_guess_hours);
+                console.debug('top_bin_y: %o', top_bin_y);
+
+                var expected_hours_by_age = (top_bin_y - bottom_bin_y) * (log_of_age - bottom_bin_x) / (top_bin_x - bottom_bin_x) + bottom_bin_y;
+                console.info('expected hours based on age: %o', expected_hours_by_age);
+
+                var expected_hours_q_of_i = expected_hours_by_age * ( (0.401 * Math.pow(quality_of_instruction, 2)) - (0.9428 * quality_of_instruction) + 1.3557);
+                console.info('same corrected for Q of i: %o', expected_hours_q_of_i);
+
+                var twenty_inch_factor = 0.704175769437174;
+                var twenty_four_inch_factor = 1.00756398627786;
+                var child_factor = 1;
+                var ratio_2024 = twenty_inch_factor/twenty_four_inch_factor;
+                console.debug('ratio 20/24 DEZE KLOPT: %o', ratio_2024);
+
+                var expected_hours_wheelsize = expected_hours_q_of_i;
+                if (nominal_wheel_size > 22.22) {
+                    expected_hours_wheelsize *= twenty_four_inch_factor;
+                } else {
+                    if ( (nominal_wheel_size == 22.22) || (age < 16) ) {
+                        expected_hours_wheelsize *= child_factor;
+                    } else {
+                        expected_hours_wheelsize *= twenty_inch_factor;
+                    }
+                }
+                console.info('same corrected for wheelsize: %o', expected_hours_wheelsize);
+
+                var male = 1.09466651158415;
+                var female = 0.896241803325918;
+                var female_male_ratio = female/male;
+                console.debug('F/M ratio: %o', female_male_ratio);
+                var expected_hours_gender = expected_hours_wheelsize;
+                if (sex == 'm') {
+                    expected_hours_gender *= male;
+                } else {
+                    expected_hours_gender *= female;
+                }
+                console.info('same corrected for gender: %o', expected_hours_gender);
+
+                // trendline linear fit of logaritms of data
+                // y=ax+b
+                var a = 0.180147;
+                var b = 0.071183;
+                var expected_hours_h_d = expected_hours_gender * Math.pow(10, (a * (Math.log(hours_per_day)/Math.log(10)) + b));
+                console.info('same corrected for h/d = raw hours expected: %o', expected_hours_h_d);
+
+                // correction factor to get median of ratio to 0 (nog te bepalen, nu 1)
+                var median_factor = 0.815296746782669;
+                var expected_hours_median = expected_hours_h_d * median_factor;
+                console.warn('final expected hours: %o', Math.round(expected_hours_median));
+                var expected_days = Math.max( (expected_hours_median/hours_per_day), 1 );
+                console.warn('expected days: %o', Math.round(expected_days) );
+                var day_delta = 24*60*60000;
+                var expected_date = new Date(new Date().getTime() + expected_days * day_delta);
+                console.warn('exected date: %o', expected_date);
+                return {'hours': Math.round(expected_hours_median), 'days': Math.round(expected_days), 'date': expected_date};
+            };
+
+            var validate_form = function($form) {
+                var valid = true;
+                $.each($form.serializeArray(), function(i, v) {
+                    $('[name='+v.name+']', $form).parent().siblings('.result').children().addClass('hide');
+                    if (!v.value) {
+                        valid = false;
+                        return true;
+                    }
+                    var validator = VALIDATORS[v.name];
+                    if (!validator) return true;
+                    var result = validator(v.value);
+                    if (!result.result) {
+                        valid = false;
+                        $('[name='+v.name+']', $form).parent().siblings('.result').children('.error').removeClass('hide').text(result.error);
+                    } else {
+                        $('[name='+v.name+']', $form).parent().siblings('.result').children('.success').removeClass('hide');
+                    }
+                });
+                return valid;
+            };
+            $(function() {
+                var $form = $('form.estimated_hours');
+                $('input,select', $form).change(function() {
+                    var valid = validate_form($form);
+                    if (!valid) {
+                        $('.results').hide();
+                        return;
+                    }
+                    $('.results').show();
+                    var result = compute_result($form);
+                    $('.expected_hours').text(''+result.hours+'h');
+                    $('.expected_days').text(result.days);
+                    $('.expected_date').text(result.date.toLocaleDateString());
+                });
+            });
+        </script>
+    </body>
+</html>
